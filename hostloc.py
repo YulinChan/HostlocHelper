@@ -1,13 +1,14 @@
 #!/bin/python3
 import random
 import time
+
 import requests
 from bs4 import BeautifulSoup
 
 
 class Hostloc:
     def __init__(self, name, passwd):
-        self.log = open('hostloc.log','a',encoding='utf-8')
+        self.log = open('hostloc.log', 'a', encoding='utf-8')
         self.name = name
         self.passwd = passwd
         self.headers = {
@@ -41,20 +42,20 @@ class Hostloc:
         self.log.write(self.time() + f'已访问uid为{uid}的用户\n')
         print(self.time() + f'已访问uid为{uid}的用户')
 
-
-    def getTids(self,page=100):
+    def getTids(self, page=100):
         tidList = []
-        r = self.session.get(f'https://www.hostloc.com/forum.php?mod=forumdisplay&fid=45&page={page}',headers=self.headers)
-        soup = BeautifulSoup(r.text,'lxml')
-        listId = soup.find('table',id="threadlisttableid").find_all('tbody')
+        r = self.session.get(f'https://www.hostloc.com/forum.php?mod=forumdisplay&fid=45&page={page}',
+                             headers=self.headers)
+        soup = BeautifulSoup(r.text, 'lxml')
+        listId = soup.find('table', id="threadlisttableid").find_all('tbody')
         for i in listId:
             t = i['id'].split('_')[-1]
             if t.isdigit():
                 tidList.append(t)
         return tidList
 
-    def comment(self,tid):
-        url = f'https://www.hostloc.com/thread-{tid}-1-1.html' # 帖子id,楼层,页码
+    def comment(self, tid):
+        url = f'https://www.hostloc.com/thread-{tid}-1-1.html'  # 帖子id,楼层,页码
         r = self.session.get(url, headers=self.headers)
         soup = BeautifulSoup(r.text, 'lxml')
         formhash = soup.find('input', {'name': 'formhash'})['value']
@@ -81,28 +82,27 @@ class Hostloc:
                 'formhash': formhash,
                 'usesig': '1',
                 'subject': ''}
-        p = self.session.post(url,params=params,data=data,headers=self.headers)
+        p = self.session.post(url, params=params, data=data, headers=self.headers)
         self.log.write(self.time() + p.text + '\n')
         print(self.time() + p.text)
-
 
     # 投票项目太少，没有必要
     def poll(self):
         pollList = []
-        r = self.session.get('https://www.hostloc.com/misc.php?mod=ranklist&type=poll&view=heats&orderby=all',headers=self.headers)
-        soup = BeautifulSoup(r.text,'lxml')
-        pollLink = soup.find('ul',class_="el pll").find_all('h4')
+        r = self.session.get('https://www.hostloc.com/misc.php?mod=ranklist&type=poll&view=heats&orderby=all',
+                             headers=self.headers)
+        soup = BeautifulSoup(r.text, 'lxml')
+        pollLink = soup.find('ul', class_="el pll").find_all('h4')
         for i in pollLink:
-            pollList.append('https://www.hostloc.com/'+i.a['href'])
+            pollList.append('https://www.hostloc.com/' + i.a['href'])
         return pollList
 
     def time(self):
-        strftime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        strftime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         return strftime
 
     def __del__(self):
         self.log.close()
-
 
 
 if __name__ == '__main__':
@@ -110,10 +110,9 @@ if __name__ == '__main__':
     me.visitOthers()
     for i in range(20):
         me.visitOthers()
-        time.sleep(5)   # 休息5s,以防触发ddcc防护机制
+        time.sleep(5)  # 休息5s,以防触发ddcc防护机制
 
     # 不建议使用水贴功能，容易被封号
     # for i in me.getTids():
     #     me.comment(i)
     #     time.sleep(60)  # 发言间隔60s
-
