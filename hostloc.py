@@ -106,12 +106,14 @@ class Hostloc:
 
 
 if __name__ == '__main__':
-    me = Hostloc('chan', 'GmNLk85Z&3!A')
+    me = Hostloc('账号', '密码')
+    me.visitOthers()
     for i in range(20):
         me.visitOthers()
         time.sleep(5)   # 休息5s,以防触发ddcc防护机制
 
-    for i in me.getTids():
-        me.comment(i)
-        time.sleep(60)  # 发言间隔60s
+    # 不建议使用水贴功能，容易被封号
+    # for i in me.getTids():
+    #     me.comment(i)
+    #     time.sleep(60)  # 发言间隔60s
 
