@@ -2,7 +2,7 @@
 
 ## 依赖
 要先安装bs4、requests两个常用爬虫库才能使用
-```python
+```
 pip3 install requests bs4
 ```
 
