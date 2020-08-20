@@ -11,6 +11,8 @@ from bs4 import BeautifulSoup
 class Hostloc:
     def __init__(self, name, passwd):
         self.log = open('./hostloc.log', 'a', encoding='utf-8')
+        if not os.path.exists('./post-list.txt'):
+            os.system("touch ./post-list.txt")
         self.name = name
         self.passwd = passwd
         # 一关键词对多答案，再随机给出答案，防止被识破
@@ -30,8 +32,6 @@ class Hostloc:
                        'infloat': 'yes',
                        'lssubmit': 'yes',
                        'inajax': 1}
-        if not os.path.exists('./post-list.txt'):
-            os.system("touch ./post-list.txt")
         self.session = requests.session()
         login = self.session.post('https://www.hostloc.com/member.php', headers=self.headers, params=self.params,
                                   data=self.data)
@@ -74,6 +74,7 @@ class Hostloc:
                 p_list[title] = link
                 self.log.write(self.time() + '   ' + title)
                 print(self.time() + '   ' + title)
+        f.close()
         return p_list
 
     def reply(self, url, msg):
@@ -181,6 +182,9 @@ class Hostloc:
         self.log.close()
         self.log = open('./hostloc.log', 'a', encoding='utf-8')
         print(self.time() + ' 列表信息清除完毕！\n')
+
+    def __del__(self):
+        self.log.close()
 
 
 if __name__ == '__main__':
